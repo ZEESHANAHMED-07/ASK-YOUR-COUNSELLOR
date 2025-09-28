@@ -1,0 +1,13 @@
+{
+  "files.associations": {
+    "*.css": "postcss"
+  },
+  "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore",
+  "less.lint.unknownAtRules": "ignore",
+  // As a fallback, disable CSS validation if your IDE still shows false warnings
+  "css.validate": false,
+  // Helpful Tailwind authoring tweaks
+  "tailwindCSS.emmetCompletions": true,
+  "editor.quickSuggestions": { "strings": true }
+}

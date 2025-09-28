@@ -1,0 +1,48 @@
+{
+  "nav": {
+    "home": "Home",
+    "mentorship": "Mentorship",
+    "exams": "Exams",
+    "courses": "Courses",
+    "contact": "Contact",
+    "about": "About",
+    "forum": "Forum",
+    "forms": "Forms",
+    "admissions": "Admissions",
+    "blog": "Blog",
+    "login": "Login"
+  },
+  "home": {
+    "intro": {
+      "title": "We guide ambitious students",
+      "desc": "AskYourCounsellor is a premium, no-noise platform for mentorship, exam strategy, admissions help, and smart learning resources.",
+      "bullets": [
+        "1:1 Mentorship and personalized study plans",
+        "Competitive exams: UPSC, SSC, Banking, JEE, NEET, and more",
+        "Form fill-up guides, checklists, and official links"
+      ]
+    },
+    "highlights": {
+      "title": "What’s New",
+      "desc": "Quick access to the most useful sections.",
+      "notifications": "Latest Notifications",
+      "mentorship": "Mentorship",
+      "forms": "Form Fill-up Guides",
+      "notifications_desc": "UPSC, SSC, Banking, JEE/NEET updates—stay informed.",
+      "mentorship_desc": "Book 1:1 sessions and get a plan that works for you.",
+      "forms_desc": "Checklists, steps, and official links for common forms.",
+      "explore": "Explore →"
+    },
+    "cta": {
+      "title": "Ready to accelerate your prep?",
+      "desc": "Join mentorship or subscribe to updates—no spam, just useful guidance.",
+      "join": "Join Mentorship",
+      "subscribe": "Subscribe for Updates"
+    }
+  },
+  "common": {
+    "language": "Language",
+    "english": "English",
+    "hindi": "Hindi"
+  }
+}
