@@ -5,7 +5,7 @@
 
 import { motion } from "framer-motion";
 import { Quote } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/Card";
 
 const testimonials = [
   {

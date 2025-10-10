@@ -2,7 +2,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import CourseCard from "@/components/courses/CourseCard";
+import CourseCard from "../../components/courses/CourseCard";
 
 const courses = [
   { id: 1, title: "Physics Foundations", level: "Beginner", length: "6 weeks" },

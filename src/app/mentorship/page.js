@@ -2,8 +2,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import MentorCard from "@/components/mentorship/MentorCard";
-import Button from "@/components/ui/Button";
+import MentorCard from "../../components/mentorship/MentorCard";
+import Button from "../../components/ui/Button";
 import Link from "next/link";
 
 const mentors = [

@@ -2,8 +2,8 @@
 // Generic category card for exam sections with a list of sub-links.
 
 import Link from "next/link";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card";
-import { cn } from "@/lib/utils";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../ui/Card";
+import { cn } from "../../lib/utils";
 
 export default function CategoryCard({ title, desc, icon: Icon, links = [], className = "" }) {
   return (

@@ -5,7 +5,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import Button from "@/components/ui/Button";
+import Button from "../ui/Button";
 
 const container = {
   hidden: { opacity: 0, y: 12 },

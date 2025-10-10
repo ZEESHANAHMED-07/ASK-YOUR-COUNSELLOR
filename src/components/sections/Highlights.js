@@ -5,9 +5,9 @@
 
 import { motion } from "framer-motion";
 import { Bell, Users, FileText } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../ui/Card";
 import Link from "next/link";
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "../../lib/i18n";
 
 function useItems(t) {
   return [

@@ -2,7 +2,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Button from "@/components/ui/Button";
+import Button from "../../components/ui/Button";
 
 export default function ContactPage() {
   return (

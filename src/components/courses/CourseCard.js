@@ -2,8 +2,8 @@
 // Course card using shadcn-style Card and Button
 
 import { GraduationCap } from "lucide-react";
-import Button from "@/components/ui/Button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/Card";
+import Button from "../ui/Button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../ui/Card";
 
 export default function CourseCard({ course }) {
   return (

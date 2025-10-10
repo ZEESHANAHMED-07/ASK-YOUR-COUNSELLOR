@@ -1,7 +1,7 @@
 // src/components/layout/LanguageToggle.js
 "use client";
 
-import { useLocale } from "@/lib/i18n";
+import { useLocale } from "../../lib/i18n";
 
 export default function LanguageToggle() {
   const { locale, setLocale } = useLocale();

@@ -5,8 +5,8 @@
 
 import { useEffect, useState } from "react";
 import { Sun, Moon } from "lucide-react";
-import Button from "@/components/ui/Button";
-import { cn } from "@/lib/utils";
+import Button from "./Button";
+import { cn } from "../../lib/utils";
 
 function getPreferredTheme() {
   if (typeof window === "undefined") return "light";

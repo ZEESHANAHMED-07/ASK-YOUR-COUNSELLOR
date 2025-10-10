@@ -7,16 +7,17 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
-import Button from "@/components/ui/Button";
-import ThemeToggle from "@/components/ui/ThemeToggle";
-import LanguageToggle from "@/components/layout/LanguageToggle";
-import { useI18n } from "@/lib/i18n";
+import Button from "../ui/Button";
+import ThemeToggle from "../ui/ThemeToggle";
+import LanguageToggle from "./LanguageToggle";
+import { useI18n } from "../../lib/i18n";
 
 const NAV_LINKS = [
   { key: "home", href: "/" },
   { key: "mentorship", href: "/mentorship" },
   { key: "exams", href: "/exams" },
   { key: "courses", href: "/courses" },
+  { key: "resources", href: "/resources" },
   { key: "contact", href: "/contact" },
   { key: "about", href: "/about" },
   { key: "forum", href: "/forum" },

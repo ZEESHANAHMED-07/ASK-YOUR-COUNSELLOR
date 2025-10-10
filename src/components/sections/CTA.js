@@ -3,8 +3,8 @@
 
 "use client";
 
-import Button from "@/components/ui/Button";
-import { useI18n } from "@/lib/i18n";
+import Button from "../ui/Button";
+import { useI18n } from "../../lib/i18n";
 
 export default function CTA() {
   const { t } = useI18n();

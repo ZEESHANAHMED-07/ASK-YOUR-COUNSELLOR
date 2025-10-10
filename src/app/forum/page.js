@@ -2,8 +2,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card";
-import Button from "@/components/ui/Button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../../components/ui/Card";
+import Button from "../../components/ui/Button";
 import Link from "next/link";
 import { MessageSquare, Users, MessageCircle } from "lucide-react";
 

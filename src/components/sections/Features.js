@@ -5,7 +5,7 @@
 
 import { motion } from "framer-motion";
 import { Users, FileText, Target, School } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../ui/Card";
 
 const features = [
   {

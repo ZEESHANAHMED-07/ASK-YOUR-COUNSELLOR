@@ -2,7 +2,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import CategoryCard from "@/components/exams/CategoryCard";
+import CategoryCard from "../../components/exams/CategoryCard";
 import { Landmark, Calendar, Banknote, GraduationCap } from "lucide-react";
 
 export default function ExamsPage() {

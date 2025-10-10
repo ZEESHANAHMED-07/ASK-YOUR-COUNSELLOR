@@ -2,7 +2,7 @@
 // Quick intro: who we are and what the site offers.
 "use client";
 
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "../../lib/i18n";
 
 export default function Intro() {
   const { t } = useI18n();

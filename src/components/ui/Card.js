@@ -1,7 +1,7 @@
 // src/components/ui/Card.js
 // Minimal shadcn-style Card primitives (JavaScript, Tailwind v4 friendly)
 
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 
 export function Card({ className = "", children, ...props }) {
   return (

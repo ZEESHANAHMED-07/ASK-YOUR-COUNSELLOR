@@ -1,54 +1,64 @@
 // src/lib/i18n.js
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import en from "@/locales/en.json";
-import hi from "@/locales/hi.json";
+import { createContext, useContext } from "react";
 
-const DICTS = { en, hi };
-const DEFAULT_LOCALE = "en";
-const STORAGE_KEY = "ayc_locale";
+// Minimal i18n: small EN dictionary + humanizer fallback so keys don't leak to UI
+const EN_DICT = {
+  // Nav
+  "nav.home": "Home",
+  "nav.mentorship": "Mentorship",
+  "nav.exams": "Exams",
+  "nav.courses": "Courses",
+  "nav.contact": "Contact",
+  "nav.about": "About",
+  "nav.forum": "Forum",
+  "nav.forms": "Forms",
+  "nav.admissions": "Admissions",
+  "nav.blog": "Blog",
+  "nav.login": "Login",
 
-function get(obj, path) {
-  return path.split(".").reduce((acc, key) => (acc && acc[key] != null ? acc[key] : undefined), obj);
-}
+  // Home: CTA
+  "home.cta.title": "Ready to accelerate your learning?",
+  "home.cta.desc": "Join mentorship or subscribe for updates and resources.",
+  "home.cta.join": "Join Mentorship",
+  "home.cta.subscribe": "Subscribe",
 
-function makeTranslator(locale) {
-  const dict = DICTS[locale] || DICTS[DEFAULT_LOCALE];
-  const fallback = DICTS[DEFAULT_LOCALE];
-  return (key) => {
-    const v = get(dict, key);
-    if (v != null) return v;
-    const f = get(fallback, key);
-    return f != null ? f : key;
-  };
+  // Home: Highlights
+  "home.highlights.title": "Highlights",
+  "home.highlights.desc": "What you can do here",
+  "home.highlights.notifications": "Exam Notifications",
+  "home.highlights.notifications_desc": "Latest updates and important dates.",
+  "home.highlights.mentorship": "Mentorship",
+  "home.highlights.mentorship_desc": "1:1 guidance from experts.",
+  "home.highlights.forms": "Form Fill-up Guides",
+  "home.highlights.forms_desc": "SOPs, letters, and applications.",
+  "home.highlights.explore": "Explore",
+
+  // Home: Intro
+  "home.intro.title": "Your path to success starts here",
+  "home.intro.desc": "Mentorship, exam guidance, and free resources.",
+};
+
+function humanizeFromKey(key) {
+  if (!key) return "";
+  const last = key.split(".").pop() || key;
+  const words = last.replace(/[_-]+/g, " ").trim();
+  return words.charAt(0).toUpperCase() + words.slice(1);
 }
 
 const I18nContext = createContext({
-  locale: DEFAULT_LOCALE,
+  locale: "en",
   setLocale: () => {},
-  t: (key) => key,
+  t: (key) => EN_DICT[key] ?? humanizeFromKey(key),
 });
 
 export function I18nProvider({ children }) {
-  const [locale, setLocale] = useState(DEFAULT_LOCALE);
-
-  useEffect(() => {
-    const saved = typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
-    if (saved && DICTS[saved]) setLocale(saved);
-  }, []);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_KEY, locale);
-      document.documentElement.setAttribute("lang", locale);
-    }
-  }, [locale]);
-
-  const t = useMemo(() => makeTranslator(locale), [locale]);
-  const value = useMemo(() => ({ locale, setLocale, t }), [locale, t]);
-
-  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
+  return (
+    <I18nContext.Provider value={{ locale: "en", setLocale: () => {}, t: (k) => EN_DICT[k] ?? humanizeFromKey(k) }}>
+      {children}
+    </I18nContext.Provider>
+  );
 }
 
 export function useI18n() {

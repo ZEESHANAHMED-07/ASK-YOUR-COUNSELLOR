@@ -3,7 +3,7 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../../components/ui/Card";
 
 const team = [
   { name: "Anika Sharma", role: "Founder • Mentor", img: "/images/team-anika.jpg" },
