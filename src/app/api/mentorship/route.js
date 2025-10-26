@@ -1,5 +1,5 @@
 import { db } from "../../config/firebaseConfig";
-import { collection, getDocs, query, where, addDoc } from "firebase/firestore";
+import { collection, collectionGroup, getDocs, query, where, addDoc, orderBy, limit } from "firebase/firestore";
 import { NextResponse } from "next/server";
 
 const allSlots = [
@@ -13,15 +13,45 @@ const allSlots = [
 // GET — available slots for a given date
 export async function GET(req) {
   try {
-    const date = req.nextUrl.searchParams.get("date");
+    const { searchParams } = req.nextUrl;
+    const userId = searchParams.get("userId");
+    const date = searchParams.get("date");
+
+    // If a userId is provided, return that user's bookings
+    if (userId) {
+      const userBookingsRef = collection(db, "users", userId, "bookings");
+      const snap = await getDocs(query(userBookingsRef, orderBy("date", "desc"), limit(20)));
+      const bookings = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      return NextResponse.json({ userId, bookings });
+    }
+
+    // Otherwise, availability for a date across all users
     if (!date) {
       return NextResponse.json({ error: "Date required" }, { status: 400 });
     }
 
-    const bookingsRef = collection(db, "bookings");
-    const q = query(bookingsRef, where("date", "==", date));
-    const snapshot = await getDocs(q);
-    const bookedSlots = snapshot.docs.map((doc) => doc.data().slot);
+    let bookedSlots = [];
+    try {
+      const qAll = query(collectionGroup(db, "bookings"), where("date", "==", date));
+      const snapshot = await getDocs(qAll);
+      bookedSlots = snapshot.docs.map((doc) => doc.data().slot);
+    } catch (err) {
+      // Fallback if collection group index is missing: scan each user's subcollection
+      if (err?.code === 'failed-precondition') {
+        const usersSnap = await getDocs(collection(db, "users"));
+        const slotsSet = new Set();
+        for (const u of usersSnap.docs) {
+          const subSnap = await getDocs(query(collection(db, "users", u.id, "bookings"), where("date", "==", date)));
+          for (const d of subSnap.docs) {
+            const s = d.data()?.slot;
+            if (s) slotsSet.add(s);
+          }
+        }
+        bookedSlots = Array.from(slotsSet);
+      } else {
+        throw err;
+      }
+    }
 
     const slots = allSlots.map((slot) => ({
       time: slot,
@@ -48,19 +78,48 @@ export async function POST(req) {
       return NextResponse.json({ error: "Invalid slot" }, { status: 400 });
     }
 
-    const bookingsRef = collection(db, "bookings");
-    const q = query(
-      bookingsRef,
+    // Ensure user has an id
+    const userId = user?.id || user?.uid;
+    if (!userId) {
+      return NextResponse.json({ error: "Missing user.id" }, { status: 400 });
+    }
+
+    // Check global conflicts across all users via collectionGroup
+    const qConflict = query(
+      collectionGroup(db, "bookings"),
       where("date", "==", date),
       where("slot", "==", slot)
     );
-    const snapshot = await getDocs(q);
+    let snapshot;
+    try {
+      snapshot = await getDocs(qConflict);
+    } catch (err) {
+      if (err?.code === 'failed-precondition') {
+        // Fallback: scan users subcollections without collectionGroup index
+        const usersSnap = await getDocs(collection(db, "users"));
+        let conflict = false;
+        for (const u of usersSnap.docs) {
+          const subSnap = await getDocs(query(collection(db, "users", u.id, "bookings"), where("date", "==", date)));
+          if (subSnap.docs.some((d) => d.data()?.slot === slot)) {
+            conflict = true;
+            break;
+          }
+        }
+        if (conflict) {
+          return NextResponse.json({ error: "Slot already booked!" }, { status: 400 });
+        }
+      } else {
+        throw err;
+      }
+    }
 
-    if (!snapshot.empty) {
+    if (snapshot && !snapshot.empty) {
       return NextResponse.json({ error: "Slot already booked!" }, { status: 400 });
     }
 
-    await addDoc(bookingsRef, { date, slot, user });
+    // Store booking under the user's subcollection
+    const userBookingsRef = collection(db, "users", userId, "bookings");
+    await addDoc(userBookingsRef, { date, slot, user });
 
     // Fire-and-forget email notification to admin using Resend HTTP API
     try {

@@ -1,4 +1,4 @@
-// src/app/exams/[...slug]/SlugClient.js
+// src/app/exam/[category]/page.js
 "use client";
 
 import { motion } from "framer-motion";
@@ -12,37 +12,37 @@ function titleCase(str) {
     .join(" ");
 }
 
-export default function SlugClient({ segments = [] }) {
-  const sectionTitle = segments.map(titleCase).join(" • ");
-  const root = ((segments && segments[0]) || "").toLowerCase();
+const officialByCategory = {
+  upsc: [
+    { label: "UPSC Online Application", href: "https://upsconline.nic.in" },
+    { label: "UPSC Official Website", href: "https://www.upsc.gov.in" },
+    { label: "UPSC Exam Calendar", href: "https://www.upsc.gov.in/examinations/exam-calendar" },
+  ],
+  ssc: [
+    { label: "SSC Official Portal", href: "https://ssc.gov.in" },
+    { label: "SSC Calendar", href: "https://ssc.gov.in/exams/schedule" },
+  ],
+  bank: [
+    { label: "IBPS Official Portal", href: "https://www.ibps.in" },
+    { label: "SBI Careers", href: "https://sbi.co.in/web/careers" },
+    { label: "RBI Opportunities", href: "https://opportunities.rbi.org.in" },
+  ],
+  "engineering-medical": [
+    { label: "JEE Main (NTA)", href: "https://jeemain.nta.ac.in" },
+    { label: "NEET (NTA)", href: "https://exams.nta.ac.in/NEET" },
+    { label: "NTA Official", href: "https://nta.ac.in" },
+  ],
+};
 
-  const officialByCategory = {
-    upsc: [
-      { label: "UPSC Online Application", href: "https://upsconline.nic.in" },
-      { label: "UPSC Official Website", href: "https://www.upsc.gov.in" },
-      { label: "UPSC Exam Calendar", href: "https://www.upsc.gov.in/examinations/exam-calendar" },
-    ],
-    ssc: [
-      { label: "SSC Official Portal", href: "https://ssc.gov.in" },
-      { label: "SSC Calendar", href: "https://ssc.gov.in/exams/schedule" },
-    ],
-    bank: [
-      { label: "IBPS Official Portal", href: "https://www.ibps.in" },
-      { label: "SBI Careers", href: "https://sbi.co.in/web/careers" },
-      { label: "RBI Opportunities", href: "https://opportunities.rbi.org.in" },
-    ],
-    "engineering-medical": [
-      { label: "JEE Main (NTA)", href: "https://jeemain.nta.ac.in" },
-      { label: "NEET (NTA)", href: "https://exams.nta.ac.in/NEET" },
-      { label: "NTA Official", href: "https://nta.ac.in" },
-    ],
-  };
+export default function ExamCategoryPage({ params }) {
+  const category = (params?.category || "").toLowerCase();
+  const sectionTitle = titleCase(category) || "Exam";
 
   const officialLinks =
-    officialByCategory[root] ||
-    (root.includes("jee") || root.includes("engineering")
+    officialByCategory[category] ||
+    (category.includes("jee") || category.includes("engineering")
       ? officialByCategory["engineering-medical"]
-      : root.includes("neet") || root.includes("medical")
+      : category.includes("neet") || category.includes("medical")
       ? officialByCategory["engineering-medical"]
       : []);
 
@@ -54,17 +54,13 @@ export default function SlugClient({ segments = [] }) {
     >
       <div className="mb-2 text-sm text-muted-foreground">
         <Link href="/exams" className="hover:underline">Exams</Link>
-        {segments.map((s, i) => (
-          <span key={i}>
-            <span className="mx-1">/</span>
-            {titleCase(s)}
-          </span>
-        ))}
+        <span className="mx-1">/</span>
+        {sectionTitle}
       </div>
 
-      <h1 className="text-3xl font-semibold tracking-tight mb-2">{sectionTitle || "Exams"}</h1>
+      <h1 className="text-3xl font-semibold tracking-tight mb-2">{sectionTitle}</h1>
       <p className="text-muted-foreground mb-6">
-        This page is a placeholder for <span className="font-medium">{sectionTitle || "Exams"}</span>. Detailed content, downloads, and tools will be added soon.
+        This is the hub for <span className="font-medium">{sectionTitle}</span>. We will add syllabus, dates, PYQs, resources, and more here.
       </p>
 
       <div className="rounded-lg border p-6">
@@ -98,7 +94,8 @@ export default function SlugClient({ segments = [] }) {
       )}
 
       <div className="mt-6 flex gap-3">
-        <Button href="/mentorship">Get 1:1 mentorship</Button>
+        <Button href={`/exam/${category}/apply`}>Apply Now</Button>
+        <Button href="/mentorship" variant="secondary">Get 1:1 mentorship</Button>
         <Button href="/exams" variant="secondary">Back to Exams</Button>
       </div>
     </motion.div>

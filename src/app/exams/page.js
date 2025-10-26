@@ -20,46 +20,28 @@ export default function ExamsPage() {
           title="UPSC"
           desc="CSE and other major exams"
           icon={Landmark}
-          links={[
-            { label: "Notifications & Dates", href: "/exams/upsc/notifications" },
-            { label: "Syllabus & Exam Pattern", href: "/exams/upsc/syllabus" },
-            { label: "Previous Year Papers", href: "/exams/upsc/previous-papers" },
-            { label: "Notes & Resources", href: "/exams/upsc/notes-resources" },
-            { label: "Mock Tests", href: "/exams/upsc/mock-tests" },
-          ]}
+          links={[{ label: "Explore", href: "/exam/upsc" }]}
         />
 
         <CategoryCard
           title="SSC"
           desc="CGL, CHSL, and more"
           icon={Calendar}
-          links={[
-            { label: "Exam Calendar", href: "/exams/ssc/calendar" },
-            { label: "Syllabus & Strategy", href: "/exams/ssc/syllabus" },
-            { label: "Previous Papers", href: "/exams/ssc/previous-papers" },
-            { label: "Free/Paid Quizzes", href: "/exams/ssc/quizzes" },
-          ]}
+          links={[{ label: "Explore", href: "/exam/ssc" }]}
         />
 
         <CategoryCard
           title="Bank Exams"
           desc="IBPS • SBI • RBI"
           icon={Banknote}
-          links={[
-            { label: "Notifications & Form Guides", href: "/exams/bank/notifications" },
-            { label: "Study Material & PDFs", href: "/exams/bank/study-material" },
-          ]}
+          links={[{ label: "Explore", href: "/exam/bank" }]}
         />
 
         <CategoryCard
           title="Engineering/Medical"
           desc="JEE • NEET • Others"
           icon={GraduationCap}
-          links={[
-            { label: "Eligibility & Syllabus", href: "/exams/engineering-medical/eligibility-syllabus" },
-            { label: "Previous Year Papers", href: "/exams/engineering-medical/previous-papers" },
-            { label: "Mentorship for Strategy", href: "/exams/engineering-medical/mentorship" },
-          ]}
+          links={[{ label: "Explore", href: "/exam/engineering-medical" }]}
         />
       </div>
     </motion.div>

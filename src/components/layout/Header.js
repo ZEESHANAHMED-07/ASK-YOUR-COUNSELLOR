@@ -21,6 +21,7 @@ const NAV_LINKS = [
   { key: "contact", href: "/contact" },
   { key: "about", href: "/about" },
   { key: "forum", href: "/forum" },
+  { key: "dashboard", href: "/dashboard" },
 ];
 
 export default function Header() {

@@ -3,7 +3,7 @@
 
 import { motion } from "framer-motion";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card";
-import Button from "@/components/ui/Button";
+import Button from "../../components/ui/Button";
 
 export default function FormsPage() {
   return (
