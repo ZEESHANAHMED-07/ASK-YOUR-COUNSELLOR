@@ -4,8 +4,10 @@
 import { GraduationCap } from "lucide-react";
 import Button from "../ui/Button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../ui/Card";
+import { useI18n } from "../../lib/i18n";
 
 export default function CourseCard({ course }) {
+  const { t } = useI18n();
   return (
     <Card className="h-full">
       <CardHeader className="flex items-center gap-3">
@@ -18,12 +20,19 @@ export default function CourseCard({ course }) {
         </div>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-muted-foreground">
-          Structured lessons, focused practice, and clear outcomes.
-        </p>
+        <p className="text-sm text-muted-foreground">{t("courses.card_desc")}</p>
       </CardContent>
       <CardFooter>
-        <Button variant="secondary" className="w-full">View Details</Button>
+        <Button
+          variant="secondary"
+          className="w-full"
+          href={
+            course.href ||
+            `/courses/${encodeURIComponent(String(course.title || "").toLowerCase())}`
+          }
+        >
+          {t("common.view_details")}
+        </Button>
       </CardFooter>
     </Card>
   );

@@ -2,7 +2,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../../../components/ui/Card";
+import { useI18n } from "../../../lib/i18n";
 
 const strategies = [
   {
@@ -24,14 +25,15 @@ const strategies = [
 ];
 
 export default function StrategiesPage() {
+  const { t } = useI18n();
   return (
     <motion.div
       className="mx-auto max-w-7xl px-4 py-12"
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      <h1 className="text-3xl font-semibold tracking-tight mb-2">Exam Strategies & Study Hacks</h1>
-      <p className="text-muted-foreground mb-8">Use systems that scale—don’t rely on motivation alone.</p>
+      <h1 className="text-3xl font-semibold tracking-tight mb-2">{t("strategies.title")}</h1>
+      <p className="text-muted-foreground mb-8">{t("strategies.desc")}</p>
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {strategies.map((s) => (

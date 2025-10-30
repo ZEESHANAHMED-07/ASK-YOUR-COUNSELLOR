@@ -11,6 +11,10 @@ import Button from "../ui/Button";
 import ThemeToggle from "../ui/ThemeToggle";
 import LanguageToggle from "./LanguageToggle";
 import { useI18n } from "../../lib/i18n";
+import { useAuthContext } from "../../app/config/providers/AuthProvider";
+import { useRouter } from "next/navigation";
+import { signOut } from "firebase/auth";
+import { auth } from "../../app/config/firebaseConfig";
 
 const NAV_LINKS = [
   { key: "home", href: "/" },
@@ -18,24 +22,32 @@ const NAV_LINKS = [
   { key: "exams", href: "/exams" },
   { key: "courses", href: "/courses" },
   { key: "resources", href: "/resources" },
-  { key: "contact", href: "/contact" },
-  { key: "about", href: "/about" },
-  { key: "forum", href: "/forum" },
-  { key: "dashboard", href: "/dashboard" },
+  { key: "profile", href: "/profile" },
 ];
 
 export default function Header() {
   const { t } = useI18n();
+  const { user } = useAuthContext();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [logoOk, setLogoOk] = useState(true);
   const links = NAV_LINKS.map((l) => ({ ...l, label: t(`nav.${l.key}`) }));
+
+  const onLogout = async () => {
+    try {
+      await signOut(auth);
+      router.replace("/sign-in");
+    } catch (e) {
+      console.error("Logout failed", e);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto max-w-7xl px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2" aria-label="AskYourCounsellor Home">
+          <Link href={`/`} className="flex items-center gap-2" aria-label="AskYourCounsellor Home">
             {/* Note: Place your logo file at /public/images/logo.png */}
             {logoOk ? (
               <Image
@@ -66,7 +78,15 @@ export default function Header() {
             ))}
             <LanguageToggle />
             <ThemeToggle />
-            <Button href="/login" size="sm" className="min-w-[88px]" aria-label={t("nav.login")}>{t("nav.login")}</Button>
+            {user ? (
+              <Button onClick={onLogout} size="sm" className="min-w-[88px]" aria-label="Logout">
+                Logout
+              </Button>
+            ) : (
+              <Button href="/sign-in" size="sm" className="min-w-[88px]" aria-label={t("nav.login")}>
+                {t("nav.login")}
+              </Button>
+            )}
           </nav>
 
           {/* Mobile Menu Button */}
@@ -103,10 +123,17 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
-            <Button href="/login" className="w-full" onClick={() => setOpen(false)}>{t("nav.login")}</Button>
+            {user ? (
+              <Button className="w-full" onClick={() => { setOpen(false); onLogout(); }} aria-label="Logout">Logout</Button>
+            ) : (
+              <Button href="/sign-in" className="w-full" onClick={() => setOpen(false)} aria-label={t("nav.login")}>
+                {t("nav.login")}
+              </Button>
+            )}
           </div>
         </div>
       )}
     </header>
   );
 }
+

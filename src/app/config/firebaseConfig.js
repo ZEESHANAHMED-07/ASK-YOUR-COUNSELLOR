@@ -6,7 +6,7 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyC8Uz3rayJVU9VLv85NEjVQMkzQ-DdbsAE",
   authDomain: "collector-a92a1.firebaseapp.com",
   projectId: "collector-a92a1",

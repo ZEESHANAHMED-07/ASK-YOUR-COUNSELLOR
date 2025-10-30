@@ -4,8 +4,10 @@
 import { Users, Star } from "lucide-react";
 import Button from "../ui/Button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../ui/Card";
+import { useI18n } from "../../lib/i18n";
 
 export default function MentorCard({ mentor }) {
+  const { t } = useI18n();
   return (
     <Card className="h-full">
       <CardHeader className="flex items-center gap-3">
@@ -22,7 +24,7 @@ export default function MentorCard({ mentor }) {
         </div>
       </CardContent>
       <CardFooter>
-        <Button className="w-full">Book Session</Button>
+        <Button className="w-full">{t("mentorship.book_session")}</Button>
       </CardFooter>
     </Card>
   );

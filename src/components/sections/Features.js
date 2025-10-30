@@ -6,36 +6,37 @@
 import { motion } from "framer-motion";
 import { Users, FileText, Target, School } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../ui/Card";
-
-const features = [
-  {
-    title: "Mentorship",
-    desc: "1:1 guidance from experienced mentors to accelerate your growth.",
-    icon: Users,
-  },
-  {
-    title: "Form Help",
-    desc: "SOPs, Letters, and applications—reviewed and refined for clarity.",
-    icon: FileText,
-  },
-  {
-    title: "Exam Guidance",
-    desc: "Roadmaps, PYQ strategies, and practice plans tailored to your goals.",
-    icon: Target,
-  },
-  {
-    title: "College Admissions",
-    desc: "End-to-end support for shortlisting, applications, and interviews.",
-    icon: School,
-  },
-];
+import { useI18n } from "../../lib/i18n";
 
 export default function Features() {
+  const { t } = useI18n();
+  const features = [
+    {
+      title: t("features.items.mentorship.title"),
+      desc: t("features.items.mentorship.desc"),
+      icon: Users,
+    },
+    {
+      title: t("features.items.form_help.title"),
+      desc: t("features.items.form_help.desc"),
+      icon: FileText,
+    },
+    {
+      title: t("features.items.exam_guidance.title"),
+      desc: t("features.items.exam_guidance.desc"),
+      icon: Target,
+    },
+    {
+      title: t("features.items.college_admissions.title"),
+      desc: t("features.items.college_admissions.desc"),
+      icon: School,
+    },
+  ];
   return (
     <section className="mx-auto max-w-7xl px-4 py-12 sm:py-16">
       <div className="mb-8 sm:mb-10 text-center">
-        <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight">What We Offer</h2>
-        <p className="mt-2 text-muted-foreground">Premium guidance designed for outcomes.</p>
+        <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight">{t("features.title")}</h2>
+        <p className="mt-2 text-muted-foreground">{t("features.subtitle")}</p>
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">

@@ -1,5 +1,5 @@
 import { db } from "../../config/firebaseConfig";
-import { collection, collectionGroup, getDocs, query, where, addDoc, orderBy, limit } from "firebase/firestore";
+import { collection, collectionGroup, getDocs, query, where, addDoc, orderBy, limit, doc, updateDoc } from "firebase/firestore";
 import { NextResponse } from "next/server";
 
 const allSlots = [
@@ -10,7 +10,7 @@ const allSlots = [
   "3:00 - 3:30 PM",
 ];
 
-// GET — available slots for a given date
+// GET — user bookings or availability for a date
 export async function GET(req) {
   try {
     const { searchParams } = req.nextUrl;
@@ -61,6 +61,34 @@ export async function GET(req) {
     return NextResponse.json({ date, slots });
   } catch (error) {
     console.error("GET /api/mentorship error:", error);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  }
+}
+
+// PATCH — update or cancel a booking
+export async function PATCH(req) {
+  try {
+    const { id, userId, date, slot, status } = await req.json();
+    if (!id || !userId) {
+      return NextResponse.json({ error: "id and userId are required" }, { status: 400 });
+    }
+
+    const update = {};
+    if (typeof status === "string") update.status = status;
+    if (typeof date === "string" && date) update.date = date;
+    if (typeof slot === "string" && slot) {
+      if (!allSlots.includes(slot)) return NextResponse.json({ error: "Invalid slot" }, { status: 400 });
+      update.slot = slot;
+    }
+    if (Object.keys(update).length === 0) {
+      return NextResponse.json({ error: "No fields to update" }, { status: 400 });
+    }
+
+    const ref = doc(db, "users", userId, "bookings", id);
+    await updateDoc(ref, update);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("PATCH /api/mentorship error:", error);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { v2 as cloudinary } from 'cloudinary';
 import { db } from "../../config/firebaseConfig";
-import { collection, addDoc, getDocs, query, orderBy, limit } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, orderBy, limit, doc, updateDoc } from "firebase/firestore";
 
 export const runtime = 'nodejs';
 
@@ -16,6 +16,21 @@ function sanitizeFolder(input, fallback = 'applications') {
   if (!input || typeof input !== 'string') return fallback;
   const v = input.replace(/\.+/g, '').replace(/[^a-z0-9_\-/]/gi, '').replace(/^\/+|\/+$/g, '');
   return v || fallback;
+}
+
+export async function PATCH(req) {
+  try {
+    const { id, userId, ...fields } = await req.json();
+    if (!id || !userId) {
+      return NextResponse.json({ error: 'id and userId required' }, { status: 400 });
+    }
+    const ref = doc(db, 'users', userId, 'applications', id);
+    await updateDoc(ref, fields);
+    return NextResponse.json({ success: true });
+  } catch (e) {
+    console.error('[applications PATCH] error', e);
+    return NextResponse.json({ error: 'Failed to update application' }, { status: 500 });
+  }
 }
 
 async function uploadOne(file, folderHint, category) {

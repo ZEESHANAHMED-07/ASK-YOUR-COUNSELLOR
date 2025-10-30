@@ -3,6 +3,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import ExamApplicationForm from "../../../../components/forms/ExamApplicationForm";
 import Button from "../../../../components/ui/Button";
 import UpscForm from "../../../../components/exams/UpscForm";
@@ -10,8 +11,9 @@ import SscForm from "../../../../components/exams/SscForm";
 import BankForm from "../../../../components/exams/BankForm";
 import EngMedForm from "../../../../components/exams/EngMedForm";
 
-export default function ApplyPage({ params }) {
-  const category = (params?.category || "").toLowerCase();
+export default function ApplyPage() {
+  const { category: categoryParam } = useParams();
+  const category = (categoryParam || "").toLowerCase();
 
   return (
     <motion.div

@@ -3,6 +3,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import Button from "../../../components/ui/Button";
 
 function titleCase(str) {
@@ -34,8 +35,9 @@ const officialByCategory = {
   ],
 };
 
-export default function ExamCategoryPage({ params }) {
-  const category = (params?.category || "").toLowerCase();
+export default function ExamCategoryPage() {
+  const { category: categoryParam } = useParams();
+  const category = (categoryParam || "").toLowerCase();
   const sectionTitle = titleCase(category) || "Exam";
 
   const officialLinks =

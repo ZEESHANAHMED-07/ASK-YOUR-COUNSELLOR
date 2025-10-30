@@ -25,7 +25,7 @@ export default function Footer() {
   return (
     <footer className="mt-12 border-t">
       <div className="mx-auto max-w-7xl px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <p className="text-sm text-muted-foreground">© {year} AskYourCounsellor. All rights reserved.</p>
+        <p className="text-sm text-muted-foreground"> {year} AskYourCounsellor. All rights reserved.</p>
         <nav className="flex items-center gap-4" aria-label="Footer Navigation">
           {LINKS.map((l) => (
             <Link key={l.href} href={l.href} className="text-sm text-muted-foreground hover:text-foreground">

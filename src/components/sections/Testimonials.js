@@ -6,6 +6,7 @@
 import { motion } from "framer-motion";
 import { Quote } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/Card";
+import { useI18n } from "../../lib/i18n";
 
 const testimonials = [
   {
@@ -28,11 +29,12 @@ const testimonials = [
 ];
 
 export default function Testimonials() {
+  const { t } = useI18n();
   return (
     <section className="mx-auto max-w-7xl px-4 py-12 sm:py-16">
       <div className="mb-8 sm:mb-10 text-center">
-        <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight">Success Stories</h2>
-        <p className="mt-2 text-muted-foreground">Real results from focused guidance.</p>
+        <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight">{t("testimonials.title")}</h2>
+        <p className="mt-2 text-muted-foreground">{t("testimonials.subtitle")}</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">

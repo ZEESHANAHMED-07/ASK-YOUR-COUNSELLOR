@@ -1,8 +1,13 @@
+export const metadata = {
+  title: "AskYourCounsellor",
+  description: "Mentorship, exam guidance, and courses for ambitious students.",
+};
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import AuthProvider from "./config/providers/AuthProvider";
+import { I18nProvider } from "../lib/i18n";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,22 +19,21 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata = {
-  title: "AskYourCounsellor",
-  description: "Mentorship, exam guidance, and courses for ambitious students.",
-};
-
+ 
 export default function RootLayout({ children }) {
+  const lang = "en";
   return (
-    <html lang="en">
+    <html lang={lang}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background text-foreground antialiased`}
       >
         
           <AuthProvider>
-            <Header />
-            <main className="min-h-[70vh]">{children}</main>
-            <Footer />
+            <I18nProvider>
+              <Header />
+              <main className="min-h-[70vh]">{children}</main>
+              <Footer />
+            </I18nProvider>
           </AuthProvider>
         
       </body>
