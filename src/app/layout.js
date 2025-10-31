@@ -7,7 +7,10 @@ import "./globals.css";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import AuthProvider from "./config/providers/AuthProvider";
-import { I18nProvider } from "../lib/i18n";
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
+
+const I18nProviderClient = dynamic(() => import("../lib/i18n").then(m => m.I18nProvider), { ssr: false });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,16 +30,17 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background text-foreground antialiased`}
       >
-        
+        <Suspense fallback={null}>
           <AuthProvider>
-            <I18nProvider>
+            <I18nProviderClient>
               <Header />
               <main className="min-h-[70vh]">{children}</main>
               <Footer />
-            </I18nProvider>
+            </I18nProviderClient>
           </AuthProvider>
-        
+        </Suspense>
       </body>
     </html>
   );
 }
+
