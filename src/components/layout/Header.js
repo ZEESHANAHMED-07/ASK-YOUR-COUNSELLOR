@@ -49,9 +49,9 @@ export default function Header() {
           {/* Logo */}
           <Link href={`/`} className="flex items-center gap-2" aria-label="AskYourCounsellor Home">
             {/* Note: Place your logo file at /public/images/logo.png */}
-            {logoOk ? (
+            {logoOk && (
               <Image
-                src="/images/logo.png"
+                src="/logo.png"
                 alt="AskYourCounsellor logo"
                 width={140}
                 height={32}
@@ -59,10 +59,8 @@ export default function Header() {
                 priority
                 onError={() => setLogoOk(false)}
               />
-            ) : (
-              <span className="text-base font-semibold tracking-tight">AskYourCounsellor</span>
             )}
-            <span className="sr-only">AskYourCounsellor</span>
+            <span className="text-base font-semibold tracking-tight">AskYourCounsellor</span>
           </Link>
 
           {/* Desktop Navigation */}
