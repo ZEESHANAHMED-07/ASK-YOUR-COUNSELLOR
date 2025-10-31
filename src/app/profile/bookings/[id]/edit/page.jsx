@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuthContext } from "../../../../config/providers/AuthProvider";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../../../../../components/ui/Card";
@@ -14,6 +14,9 @@ export default function EditBookingPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ date: "", slot: "" });
+  const [original, setOriginal] = useState({ date: "", slot: "" });
+  const [slotsLoading, setSlotsLoading] = useState(false);
+  const [slots, setSlots] = useState([]); // { time, available }
 
   useEffect(() => {
     const load = async () => {
@@ -36,7 +39,10 @@ export default function EditBookingPage() {
           }
         }
         if (!booking) throw new Error("Booking not found");
-        setForm({ date: booking.date || "", slot: booking.slot || "" });
+        const date = booking.date || "";
+        const slot = booking.slot || "";
+        setForm({ date, slot });
+        setOriginal({ date, slot });
       } catch (e) {
         toast.error(e.message || "Failed to load booking");
       } finally {
@@ -47,6 +53,36 @@ export default function EditBookingPage() {
   }, [user?.uid, id]);
 
   const onChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+
+  // Load availability when date changes
+  useEffect(() => {
+    const fetchSlots = async () => {
+      try {
+        if (!form.date) { setSlots([]); return; }
+        setSlotsLoading(true);
+        const res = await fetch(`/api/mentorship?date=${encodeURIComponent(form.date)}`, { cache: "no-store" });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || "Failed to load availability");
+        const rows = Array.isArray(data.slots) ? data.slots : [];
+        setSlots(rows);
+      } catch (e) {
+        toast.error(e.message || "Could not load availability");
+        setSlots([]);
+      } finally {
+        setSlotsLoading(false);
+      }
+    };
+    fetchSlots();
+  }, [form.date]);
+
+  const computedSlots = useMemo(() => {
+    // Allow keeping the original slot if date unchanged
+    if (!Array.isArray(slots)) return [];
+    return slots.map((s) => {
+      const isOriginal = form.date && original.date === form.date && original.slot === s.time;
+      return { ...s, available: s.available || isOriginal };
+    });
+  }, [slots, form.date, original.date, original.slot]);
 
   const onSave = async () => {
     try {
@@ -87,7 +123,25 @@ export default function EditBookingPage() {
               </div>
               <div className="grid gap-1.5">
                 <label className="text-sm font-medium" htmlFor="slot">Slot</label>
-                <input id="slot" name="slot" value={form.slot} onChange={onChange} className="border rounded-md px-3 py-2 text-sm" />
+                {form.date ? (
+                  <select
+                    id="slot"
+                    name="slot"
+                    value={form.slot}
+                    onChange={onChange}
+                    className="border rounded-md px-3 py-2 text-sm"
+                  >
+                    <option value="" disabled>Select a slot</option>
+                    {computedSlots.map((s) => (
+                      <option key={s.time} value={s.time} disabled={!s.available}>
+                        {s.time} {!s.available ? "— Booked" : ""}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input id="slot" name="slot" value={form.slot} onChange={onChange} className="border rounded-md px-3 py-2 text-sm" />
+                )}
+                {slotsLoading && <span className="text-xs text-muted-foreground">Loading slots...</span>}
               </div>
             </div>
           )}

@@ -22,6 +22,8 @@ export default function ProfilePage() {
   const [pwdNew, setPwdNew] = useState("");
   const [changingPwd, setChangingPwd] = useState(false);
   // Editing moved to dedicated pages
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmingId, setConfirmingId] = useState("");
 
   const loadProfile = async () => {
     try {
@@ -151,11 +153,10 @@ export default function ProfilePage() {
     }
   };
 
-  const cancelBooking = async (id) => {
+  const performCancel = async (id) => {
     try {
       if (!user) return;
-      const ok = window.confirm("Cancel this booking?");
-      if (!ok) return;
+      setConfirmOpen(false);
       const token = await user.getIdToken();
       const res = await fetch("/api/mentorship", {
         method: "PATCH",
@@ -164,7 +165,16 @@ export default function ProfilePage() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "Failed to cancel booking");
-      toast.success("Booking cancelled");
+      toast.success("Booking cancelled", {
+        icon: "🗓️",
+        duration: 2500,
+        style: {
+          borderRadius: "10px",
+          background: "#111827",
+          color: "#F9FAFB",
+          border: "1px solid #374151",
+        },
+      });
       await loadBookings();
     } catch (e) {
       toast.error(e.message || "Cancel failed");
@@ -300,34 +310,62 @@ export default function ProfilePage() {
             <div className="text-sm text-muted-foreground">No bookings found.</div>
           ) : (
             <div className="grid gap-3">
-              {bookings.map((b) => (
-                <div key={b.id} className="rounded-md border p-4">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="text-sm font-medium">{b.slot || "Slot"}</div>
-                    <div className="flex items-center gap-2">
-                      <div className="text-xs text-muted-foreground">{b.date || "-"}</div>
-                      <Button size="sm" variant="secondary" href={`/profile/bookings/${b.id}/edit`}>
-                        Edit
-                      </Button>
-                      <Button size="sm" variant="ghost" onClick={() => cancelBooking(b.id)}>
-                        Cancel
-                      </Button>
+              {bookings.map((b) => {
+                const cancelled = (b.status || 'confirmed') === 'cancelled';
+                return (
+                  <div key={b.id} className={`rounded-md border p-4 ${cancelled ? 'opacity-70' : ''}`}>
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <div className="text-sm font-medium">{b.slot || "Slot"}</div>
+                        <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs ${cancelled ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-muted text-foreground/80'}`}>
+                          {cancelled ? 'Cancelled' : 'Confirmed'}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="text-xs text-muted-foreground">{b.date || "-"}</div>
+                        {!cancelled && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => { setConfirmingId(b.id); setConfirmOpen(true); }}
+                          >
+                            Cancel
+                          </Button>
+                        )}
+                      </div>
                     </div>
+                    {b.user?.name && (
+                      <div className="mt-2 text-sm">
+                        <span className="text-muted-foreground">Booked by: </span>
+                        <span className="font-medium">{b.user.name}</span>
+                      </div>
+                    )}
                   </div>
-                  {b.user?.name && (
-                    <div className="mt-2 text-sm">
-                      <span className="text-muted-foreground">Booked by: </span>
-                      <span className="font-medium">{b.user.name}</span>
-                    </div>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </CardContent>
       </Card>
 
       <Toaster position="top-right" />
+
+      {/* Cancel confirmation modal */}
+      {confirmOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setConfirmOpen(false)} />
+          <div className="relative z-[61] w-full max-w-sm rounded-lg border bg-background p-5 shadow-xl">
+            <div className="mb-3">
+              <div className="text-base font-medium">Cancel this booking?</div>
+              <div className="mt-1 text-sm text-muted-foreground">This action cannot be undone.</div>
+            </div>
+            <div className="mt-4 flex justify-end gap-2">
+              <Button variant="secondary" onClick={() => setConfirmOpen(false)}>Keep</Button>
+              <Button onClick={() => performCancel(confirmingId)}>Cancel booking</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

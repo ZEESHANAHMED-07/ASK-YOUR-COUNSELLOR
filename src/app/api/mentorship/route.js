@@ -1,5 +1,5 @@
 import { db } from "../../config/firebaseConfig";
-import { collection, collectionGroup, getDocs, query, where, addDoc, orderBy, limit, doc, updateDoc } from "firebase/firestore";
+import { collection, collectionGroup, getDocs, query, where, addDoc, orderBy, limit, doc, updateDoc, getDoc } from "firebase/firestore";
 import { NextResponse } from "next/server";
 
 const allSlots = [
@@ -16,13 +16,23 @@ export async function GET(req) {
     const { searchParams } = req.nextUrl;
     const userId = searchParams.get("userId");
     const date = searchParams.get("date");
+    const id = searchParams.get("id");
 
-    // If a userId is provided, return that user's bookings
+    // If a userId is provided, return that user's bookings (or a single booking if id provided)
     if (userId) {
       const userBookingsRef = collection(db, "users", userId, "bookings");
-      const snap = await getDocs(query(userBookingsRef, orderBy("date", "desc"), limit(20)));
-      const bookings = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-      return NextResponse.json({ userId, bookings });
+      if (id) {
+        // Fetch a single booking by id under this user's subcollection
+        const snap = await getDocs(query(userBookingsRef, limit(50)));
+        const rows = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        const booking = rows.find((b) => String(b.id) === String(id)) || null;
+        if (!booking) return NextResponse.json({ error: "Booking not found" }, { status: 404 });
+        return NextResponse.json({ userId, booking });
+      } else {
+        const snap = await getDocs(query(userBookingsRef, orderBy("date", "desc"), limit(20)));
+        const bookings = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        return NextResponse.json({ userId, bookings });
+      }
     }
 
     // Otherwise, availability for a date across all users
@@ -34,7 +44,10 @@ export async function GET(req) {
     try {
       const qAll = query(collectionGroup(db, "bookings"), where("date", "==", date));
       const snapshot = await getDocs(qAll);
-      bookedSlots = snapshot.docs.map((doc) => doc.data().slot);
+      bookedSlots = snapshot.docs
+        .map((d) => d.data())
+        .filter((row) => (row?.status || 'confirmed') !== 'cancelled')
+        .map((row) => row.slot);
     } catch (err) {
       // Fallback if collection group index is missing: scan each user's subcollection
       if (err?.code === 'failed-precondition') {
@@ -43,8 +56,10 @@ export async function GET(req) {
         for (const u of usersSnap.docs) {
           const subSnap = await getDocs(query(collection(db, "users", u.id, "bookings"), where("date", "==", date)));
           for (const d of subSnap.docs) {
-            const s = d.data()?.slot;
-            if (s) slotsSet.add(s);
+            const row = d.data();
+            const s = row?.slot;
+            const status = row?.status || 'confirmed';
+            if (s && status !== 'cancelled') slotsSet.add(s);
           }
         }
         bookedSlots = Array.from(slotsSet);
@@ -84,7 +99,52 @@ export async function PATCH(req) {
       return NextResponse.json({ error: "No fields to update" }, { status: 400 });
     }
 
+    // If changing date/slot, ensure no conflicts across all users (excluding this booking)
     const ref = doc(db, "users", userId, "bookings", id);
+    const currentSnap = await getDoc(ref);
+    if (!currentSnap.exists()) {
+      return NextResponse.json({ error: "Booking not found" }, { status: 404 });
+    }
+    const current = currentSnap.data() || {};
+    const newDate = update.date || current.date;
+    const newSlot = update.slot || current.slot;
+    if (newDate && newSlot) {
+      try {
+        const qConflict = query(
+          collectionGroup(db, "bookings"),
+          where("date", "==", newDate),
+          where("slot", "==", newSlot)
+        );
+        const conflictSnap = await getDocs(qConflict);
+        const conflict = conflictSnap.docs.some((d) => {
+          // Exclude this booking; collectionGroup doc.id is subcollection id, compare fields
+          const row = d.data();
+          const sameId = row?.user?.id === userId || row?.user?.uid === userId ? d.id === id : false;
+          const cancelled = (row?.status || 'confirmed') === 'cancelled';
+          return !sameId && !cancelled;
+        });
+        if (conflict) {
+          return NextResponse.json({ error: "Slot already booked!" }, { status: 400 });
+        }
+      } catch (err) {
+        // Fallback: best-effort check under users/*/bookings on same date
+        const usersSnap = await getDocs(collection(db, "users"));
+        let conflict = false;
+        for (const u of usersSnap.docs) {
+          const subSnap = await getDocs(query(collection(db, "users", u.id, "bookings"), where("date", "==", newDate)));
+          for (const d of subSnap.docs) {
+            if (u.id === userId && d.id === id) continue;
+            const row = d.data();
+            if (row?.slot === newSlot && (row?.status || 'confirmed') !== 'cancelled') { conflict = true; break; }
+          }
+          if (conflict) break;
+        }
+        if (conflict) {
+          return NextResponse.json({ error: "Slot already booked!" }, { status: 400 });
+        }
+      }
+    }
+
     await updateDoc(ref, update);
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -147,7 +207,7 @@ export async function POST(req) {
 
     // Store booking under the user's subcollection
     const userBookingsRef = collection(db, "users", userId, "bookings");
-    await addDoc(userBookingsRef, { date, slot, user });
+    await addDoc(userBookingsRef, { date, slot, user, status: 'confirmed' });
 
     // Fire-and-forget email notification to admin using Resend HTTP API
     try {
