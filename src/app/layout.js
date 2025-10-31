@@ -7,10 +7,8 @@ import "./globals.css";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import AuthProvider from "./config/providers/AuthProvider";
-import dynamic from "next/dynamic";
+import I18nProviders from "./config/providers/I18nProviders";
 import { Suspense } from "react";
-
-const I18nProviderClient = dynamic(() => import("../lib/i18n").then(m => m.I18nProvider), { ssr: false });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,11 +30,11 @@ export default function RootLayout({ children }) {
       >
         <Suspense fallback={null}>
           <AuthProvider>
-            <I18nProviderClient>
+            <I18nProviders>
               <Header />
               <main className="min-h-[70vh]">{children}</main>
               <Footer />
-            </I18nProviderClient>
+            </I18nProviders>
           </AuthProvider>
         </Suspense>
       </body>
