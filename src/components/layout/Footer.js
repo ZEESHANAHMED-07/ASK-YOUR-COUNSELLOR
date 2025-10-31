@@ -24,9 +24,14 @@ export default function Footer() {
   const year = new Date().getFullYear();
   return (
     <footer className="mt-12 border-t">
-      <div className="mx-auto max-w-7xl px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <p className="text-sm text-muted-foreground"> {year} AskYourCounsellor. All rights reserved.</p>
-        <nav className="flex items-center gap-4" aria-label="Footer Navigation">
+      <div className="mx-auto max-w-7xl px-4 py-8 grid gap-6 sm:grid-cols-2 md:grid-cols-3 items-center">
+        <p className="text-sm text-muted-foreground order-2 sm:order-1 text-center sm:text-left md:col-span-1">
+          {year} AskYourCounsellor. All rights reserved.
+        </p>
+        <nav
+          className="order-1 sm:order-2 w-full md:col-span-2 flex flex-wrap items-center justify-center sm:justify-end gap-x-4 gap-y-2"
+          aria-label="Footer Navigation"
+        >
           {LINKS.map((l) => (
             <Link key={l.href} href={l.href} className="text-sm text-muted-foreground hover:text-foreground">
               {t(`nav.${l.key}`)}
