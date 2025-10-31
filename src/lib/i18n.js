@@ -2,7 +2,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+ 
 
 // Minimal i18n: small EN dictionary + humanizer fallback so keys don't leak to UI
 const EN_DICT = {
@@ -647,8 +647,7 @@ const I18nContext = createContext({
 });
 
 export function I18nProvider({ children }) {
-  const router = useRouter();
-  const pathname = usePathname();
+  
 
   // Initialize locale from URL prefix if present, else from localStorage/cookie fallback
   const [locale, setLocaleState] = useState(() => {
